@@ -62,7 +62,13 @@ class Config(object):
 
         # This will create a file in <app> FOLDER
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
-    
+
+class DevelopmentConfig(Config):
+    # Development configurations
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'  # or your preferred database URI
+
+
 class ProductionConfig(Config):
     DEBUG = False
 
@@ -76,6 +82,7 @@ class DebugConfig(Config):
 
 # Load all possible configurations
 config_dict = {
+    'development': DevelopmentConfig,
     'Production': ProductionConfig,
     'Debug'     : DebugConfig
 }
