@@ -27960,3 +27960,35 @@ pre[class*=language-] {
 }
 
 /*# sourceMappingURL=dashboard-free.css.map */
+
+
+/* Sidebar sticky footer styles */
+#sidenav-main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh !important;
+    overflow: hidden;
+}
+
+#sidenav-main > div {
+    min-height: 0;  /* This is important for Firefox */
+}
+
+#sidenav-collapse-main {
+    overflow-y: auto;
+    scrollbar-width: thin;  /* For Firefox */
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+#sidenav-collapse-main::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidenav-collapse-main::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.sidenav-footer {
+    flex-shrink: 0;  /* Prevents the footer from shrinking */
+}
