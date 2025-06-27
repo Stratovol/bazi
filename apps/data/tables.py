@@ -1,6 +1,7 @@
 from apps import db
 
 class ChineseCalendar(db.Model):
+    __bind_key__ = 'data_db'  # This tells SQLAlchemy to use the data database
     __tablename__ = 'chinese_calendar'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -24,3 +25,74 @@ class ChineseCalendar(db.Model):
 
     def __repr__(self):
         return f'<ChineseCalendar {self.year}>'
+
+
+class Stems(db.Model):
+    __bind_key__ = 'data_db'
+    __tablename__ = 'stems'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(10), nullable=False)
+
+    __table_args__ = {'info': {'is_read_only': True}}
+
+    def __repr__(self):
+        return f'<Stems {self.name}>'
+
+
+class Branches(db.Model):
+    __bind_key__ = 'data_db'
+    __tablename__ = 'branches'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(10), nullable=False)
+
+    __table_args__ = {'info': {'is_read_only': True}}
+
+    def __repr__(self):
+        return f'<Branches {self.name}>'
+
+
+class Divisions(db.Model):
+    __bind_key__ = 'data_db'
+    __tablename__ = 'divisions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(10), nullable=False)
+    element = db.Column(db.String(10), nullable=False)
+    phase = db.Column(db.String(10), nullable=False)
+
+    __table_args__ = {'info': {'is_read_only': True}}
+
+    def __repr__(self):
+        return f'<Divisions {self.name}>'
+
+
+class StemOrgan(db.Model):
+    __bind_key__ = 'data_db'
+    __tablename__ = 'stem_organs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    chinese_char = db.Column(db.String(10), nullable=False)
+    pinyin = db.Column(db.String(10), nullable=False)
+    organ = db.Column(db.String(10), nullable=False)
+
+    __table_args__ = {'info': {'is_read_only': True}}
+
+    def __repr__(self):
+        return f'<StemOrgan {self.pinyin} - {self.organ}>'
+
+
+class BranchOrgan(db.Model):
+    __bind_key__ = 'data_db'
+    __tablename__ = 'branch_organs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    chinese_char = db.Column(db.String(10), nullable=False)
+    pinyin = db.Column(db.String(10), nullable=False)
+    organ = db.Column(db.String(10), nullable=False)
+
+    __table_args__ = {'info': {'is_read_only': True}}
+
+    def __repr__(self):
+        return f'<BranchOrgan {self.pinyin} - {self.organ}>'

@@ -13,7 +13,7 @@ from apps import db
 @blueprint.route('/index')
 @login_required
 def index():
-    return render_template('pages/index.html', segment='dashboard')
+    return render_template('pages/index.html', segment='lunar_bazi')
 
 @blueprint.route('/billing')
 def billing():
