@@ -13,6 +13,14 @@
       border: 1px solid #dee2e6 !important;
     }
     
+    /* Make the label column narrower */
+    .table-fullgrid td:last-child,
+    .table-fullgrid th:last-child {
+      width: 120px !important;
+      max-width: 120px !important;
+      min-width: 120px !important;
+    }
+    
     /* Make all form elements the same height */
     .uniform-height {
       height: 35px !important;
@@ -191,6 +199,7 @@
         <th scope="col">Day</th>
         <th scope="col">Month</th>
         <th scope="col">Year</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
