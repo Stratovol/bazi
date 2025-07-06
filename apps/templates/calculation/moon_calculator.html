@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Age Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Moon Age Calculator</h1>
+    <div>
+        <label for="dateInput">Select Date:</label>
+        <input type="date" id="dateInput">
+        <button onclick="calculateMoonAge()">Calculate</button>
+    </div>
+    <div class="result" id="moonAgeResult">
+        Moon age will appear here...
+    </div>
+
+    <script>
+        async function calculateMoonAge() {
+            const dateInput = document.getElementById('dateInput');
+            const resultDiv = document.getElementById('moonAgeResult');
+
+            if (!dateInput.value) {
+                resultDiv.textContent = 'Please select a date';
+                return;
+            }
+
+            try {
+                const response = await fetch('/calculate-moon-age', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date: dateInput.value
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                resultDiv.textContent = result.moon_age;
+            } catch (error) {
+                resultDiv.textContent = 'Error calculating moon age';
+                console.error('Error:', error);
+            }
+        }
+
+        // Set today's date as default
+        document.getElementById('dateInput').valueAsDate = new Date();
+    </script>
+</body>
+</html>

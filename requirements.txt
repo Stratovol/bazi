@@ -26,5 +26,7 @@ python-dotenv==1.0.1
 gunicorn==23.0.0
 Flask-Minify==0.48
 
+#calculations
+lunardate
 # flask_mysqldb
 # psycopg2-binary
