@@ -1,5 +1,5 @@
 from apps import create_app, db
-from apps.data.tables import ChineseCalendar, Stems, Branches, Divisions, StemOrgan, BranchOrgan
+from apps.data.tables import ChineseCalendar, Stems, Branches, Divisions, StemOrgan, BranchOrgan, CycleCalendar
 from apps.config import config_dict
 
 def init_stems_data():
@@ -125,6 +125,37 @@ def init_calendar_data():
         print("Calendar data inserted successfully")
 
 
+
+def init_cycle_calendar_data():
+    # create your Flask app in “development” mode (or whatever config you use)
+    app = create_app(config_dict['development'])
+    with app.app_context():
+        # Create tables for all binds
+        db.create_all()
+        print(f"Using database: {app.config['SQLALCHEMY_BINDS']['data_db']}")
+
+        # Heavenly Stems and Earthly Branches
+        stems    = ["Jia", "Yi", "Bing", "Ding", "Wu", "Ji", "Geng", "Xin", "Ren", "Gui"]
+        branches = ["Zi", "Chou","Yin","Mao","Chen","Si", "Wu", "Wei","Shen","You","Xu","Hai"]
+
+        # Clear out existing data (optional)
+        CycleCalendar.query.delete()
+
+        # Seed the 60‐year cycle
+        for year_number in range(1, 61):
+            stem   = stems[(year_number - 1) % 10]
+            branch = branches[(year_number - 1) % 12]
+            entry = CycleCalendar(
+                year   = year_number,
+                stem   = stem,
+                branch = branch
+            )
+            db.session.add(entry)
+
+        db.session.commit()
+        print("✅ cycle_calendar seeded with 60 entries.")
+
+
 if __name__ == '__main__':
     app = create_app(config_dict['development'])
     with app.app_context():
@@ -132,6 +163,7 @@ if __name__ == '__main__':
         # init_calendar_data()
         # init_stems_data()
         # init_branches_data()
-        init_divisions_data()
+        #init_divisions_data()
         #init_stem_organs_data()
         #init_branch_organs_data()
+        init_cycle_calendar_data()

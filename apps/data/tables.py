@@ -96,3 +96,12 @@ class BranchOrgan(db.Model):
 
     def __repr__(self):
         return f'<BranchOrgan {self.pinyin} - {self.organ}>'
+
+class CycleCalendar(db.Model):
+    __bind_key__ = 'data_db'
+    __tablename__ = 'cycle_calendar'
+
+    id          = db.Column(db.Integer, primary_key=True)
+    year        = db.Column(db.Integer, nullable=False)   # 1..60
+    stem        = db.Column(db.String(10), nullable=False)
+    branch      = db.Column(db.String(10), nullable=False)
