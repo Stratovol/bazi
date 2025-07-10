@@ -5,64 +5,68 @@
     /* full grid around every cell */
     .table-fullgrid {
       border-collapse: collapse;
-      width: 60% !important; /* Make table narrower */
-      margin: 0 !important; /* Left align the table */
+      width: 60% !important;
+      margin: 0 !important;
     }
     .table-fullgrid th,
     .table-fullgrid td {
       border: 1px solid #dee2e6 !important;
     }
-    
+
     /* Make the label column narrower */
     .table-fullgrid td:last-child,
     .table-fullgrid th:last-child {
       width: 120px !important;
-      max-width: 120px !important;
-      min-width: 120px !important;
     }
-    
-    /* Make all form elements the same height */
+
+    /* Uniform heights */
     .uniform-height {
       height: 35px !important;
       display: flex !important;
       align-items: center !important;
       padding: 0.375rem 0.75rem !important;
     }
-    
     .uniform-height input {
       border: none !important;
-      outline: none !important;
       background: transparent !important;
+      flex: 1 !important;
       height: 100% !important;
       padding: 0 !important;
-      flex: 1 !important;
     }
-    
-    .uniform-height input:focus {
-      box-shadow: none !important;
-    }
-    
-    /* Special handling for the time input with dropdown */
+
+    /* Time-picker styling */
     .time-wrapper {
       position: relative !important;
-      flex: 1 !important;
       display: flex !important;
       align-items: center !important;
+      flex: 1 !important;
+      width: 100% !important;
     }
-    
     .time-wrapper input {
+      width: 100% !important;
       padding-right: 2.5rem !important;
     }
-    
-    /* Fix dropdown positioning */
     .dropdown-menu {
       position: absolute !important;
       right: 0 !important;
       left: auto !important;
       z-index: 1050 !important;
     }
-    
-    /* Calculate button - smaller and positioned below */
+    /* Tuck the dropdown-toggle inside the input */
+    .time-wrapper .dropdown-toggle {
+      position: absolute !important;
+      top: 50% !important;
+      right: 0.5rem !important;
+      transform: translateY(-50%) !important;
+      width: 1.5rem !important;
+      height: 1.5rem !important;
+      padding: 0 !important;
+      z-index: 2 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+
+    /* Calculate button (original styling) */
     .calculate-btn {
       width: 100% !important;
       height: 30px !important;
@@ -70,146 +74,130 @@
       font-size: 12px !important;
       line-height: 1 !important;
       padding: 0 8px !important;
-      border: none !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       gap: 5px !important;
+      border: none !important;
     }
-    
     .calculate-btn i {
       font-size: 10px !important;
     }
-    
-    /* Grayed out state */
+
+    /* Grayed-out unknown hour */
     .grayed-out {
       background-color: #e9ecef !important;
       color: #6c757d !important;
     }
-    
     .grayed-out input {
-      color: #6c757d !important;
       pointer-events: none !important;
     }
-    
-    /* Make sure dropdown button is always clickable */
     .grayed-out .dropdown-toggle {
       pointer-events: auto !important;
     }
-    
-    /* Force thin GM row */
+
+    /* Thin GM row */
     .gm-row {
       height: 25px !important;
-      max-height: 25px !important;
       line-height: 1 !important;
     }
-    
     .gm-row td {
       padding: 2px 8px !important;
       height: 25px !important;
-      max-height: 25px !important;
       vertical-align: middle !important;
-      line-height: 1 !important;
     }
   </style>
-
 {% endblock extrastyle %}
 
 {% block content %}
   <div class="container-fluid py-4">
-
-    {# — Date/Time & Moon Age/Season — #}
     <div class="row">
-      <div class="col-lg-3 col-md-4 col-sm-6 col-12 mt-4">
+      <!-- Date & Time Inputs -->
+      <div class="col-lg-2 col-md-4 col-sm-6 col-6 mt-4">
         <div class="card shadow">
           <div class="card-body p-3">
-            <!-- Date -->
-            <div class="mb-3">
+            <div class="mb-2">
               <label for="dateInput" class="form-label">Date</label>
               <div class="form-control uniform-height">
                 <input type="date" id="dateInput">
               </div>
             </div>
-            <!-- Time -->
-            <div class="mb-3">
+            <div class="mb-2">
               <label for="timeInput" class="form-label">Time</label>
               <div class="form-control uniform-height" id="timeContainer">
                 <div class="time-wrapper">
-                  <input type="text" id="timeInput" placeholder="HH:MM"
-                         pattern="^([01]\\d|2[0-3]):([0-5]\\d)$">
-                  <button class="btn btn-outline-secondary dropdown-toggle position-absolute top-50 end-0 translate-middle-y"
-                          type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                          style="height: 20px; width: 20px; border-radius: 4px; margin-right: 6px; font-size: 8px;" id="timeDropdown">
+                  <input type="text" id="timeInput"
+                         placeholder="HH:MM"
+                         pattern="^([01]\d|2[0-3]):([0-5]\d)$">
+                  <button class="dropdown-toggle"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          id="timeDropdown">
+                    <i class="fas fa-chevron-down"></i>
                   </button>
                   <div class="dropdown-menu p-0"
                        style="max-height:200px; overflow-y:auto; width:6rem;">
-                    <button class="dropdown-item time-option py-1 text-center text-muted" type="button"
+                    <button class="dropdown-item time-option py-1 text-center text-muted"
                             data-value="unknown">Unknown Hour</button>
                     <div class="dropdown-divider"></div>
                     {% for hour in range(0,24) %}
                       {% for minute in [0,15,30,45] %}
                         {% set hh = '%02d'|format(hour) %}
                         {% set mm = '%02d'|format(minute) %}
-                        <button class="dropdown-item time-option py-1 text-center" type="button"
+                        <button class="dropdown-item time-option py-1 text-center"
                                 data-value="{{ hh }}:{{ mm }}">{{ hh }}:{{ mm }}</button>
                       {% endfor %}
                     {% endfor %}
                   </div>
                 </div>
               </div>
-              <button class="btn btn-primary calculate-btn" id="calculateBtn" title="Calculate">
-                <i class="fas fa-calculator"></i>
-                <span>Calculate</span>
-              </button>
             </div>
+            <button class="btn btn-primary calculate-btn"
+                    id="calculateBtn">
+              <i class="fas fa-calculator"></i>
+              <span>Calculate</span>
+            </button>
           </div>
         </div>
       </div>
 
+      <!-- Results: Moon Phase & Chinese Date -->
       <div class="col-lg-3 col-md-6 col-sm-6 col-12 mt-4">
         <div class="card shadow">
           <div class="card-body p-3">
-            <!-- Row 1: Moon Age & Season side by side -->
             <div class="row mb-3">
-              <div class="col-5">
-                <label for="moonAge" class="form-label">Moon Age</label>
-                <div class="form-control bg-light uniform-height" id="moonAge" style="cursor:default;" readonly>
-                  <!-- will be populated by JS -->
-                </div>
+              <div class="col-6">
+                <label for="moonAge" class="form-label">Moon Phase</label>
+                <div class="form-control bg-light uniform-height"
+                     id="moonAge" readonly></div>
               </div>
-              <div class="col-5">
+              <div class="col-6">
                 <label for="season" class="form-label">Season</label>
-                <div class="form-control bg-light uniform-height" id="season" style="cursor:default;" readonly>
-                  <!-- will be populated by JS -->
-                </div>
+                <div class="form-control bg-light uniform-height"
+                     id="season" readonly></div>
               </div>
             </div>
-
-            <!-- Row 2: Cycle / Year / Month / Day -->
             <div class="row">
               <div class="col-2">
                 <label class="form-label">Cycle</label>
-                <div class="form-control bg-light uniform-height" id="cycleValue" style="cursor:default;" readonly>
-                  <!-- JS: cycle# -->
-                </div>
+                <div class="form-control bg-light uniform-height"
+                     id="cycleValue" readonly></div>
               </div>
-              <div class="col-4">
+              <div class="col-5">
                 <label class="form-label">Year</label>
-                <div class="form-control bg-light uniform-height" id="yearValue" style="cursor:default;" readonly>
-                  <!-- JS: year# -->
-                </div>
+                <div class="form-control bg-light uniform-height"
+                     id="yearValue" readonly></div>
               </div>
               <div class="col-2">
                 <label class="form-label">Month</label>
-                <div class="form-control bg-light uniform-height" id="monthValue" style="cursor:default;" readonly>
-                  <!-- JS: month# -->
-                </div>
+                <div class="form-control bg-light uniform-height"
+                     id="monthValue" readonly></div>
               </div>
               <div class="col-2">
                 <label class="form-label">Day</label>
-                <div class="form-control bg-light uniform-height" id="dayValue" style="cursor:default;" readonly>
-                  <!-- JS: day# -->
-                </div>
+                <div class="form-control bg-light uniform-height"
+                     id="dayValue" readonly></div>
               </div>
             </div>
           </div>
@@ -217,86 +205,104 @@
       </div>
     </div>
 
-    {# — Stats table — #}
+    <!-- Stats table (unchanged) -->
     <div class="row mt-4">
       <div class="col-12">
-
-<div class="table-responsive">
-  <table class="table table-fullgrid align-middle text-center mb-0">
-    <thead class="table-light">
-      <tr>
-        <th scope="col">Hour</th>
-        <th scope="col">Day</th>
-        <th scope="col">Month</th>
-        <th scope="col">Year</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="gm-row">
-        <td style="padding: 2px 8px !important; height: 25px !important;">&nbsp;</td>
-        <td style="padding: 2px 8px !important; height: 25px !important;">&nbsp;</td>
-        <td style="padding: 2px 8px !important; height: 25px !important;">&nbsp;</td>
-        <td style="padding: 2px 8px !important; height: 25px !important;">&nbsp;</td>
-        <td class="text-start" style="padding: 2px 8px !important; height: 25px !important;">GM</td>
-      </tr>
-      <tr style="height: 90px;">
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td class="text-start">Stem</td>
-      </tr>
-      <tr style="height: 90px;">
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td class="text-start">Branch</td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td class="text-start">Hidden Stems</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
+        <div class="table-responsive">
+          <table class="table table-fullgrid align-middle text-center mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Hour</th><th>Day</th><th>Month</th><th>Year</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="gm-row"><td colspan="4">&nbsp;</td><td class="text-start">GM</td></tr>
+              <tr style="height:90px;"><td colspan="4">&nbsp;</td><td class="text-start">Stem</td></tr>
+              <tr style="height:90px;"><td colspan="4">&nbsp;</td><td class="text-start">Branch</td></tr>
+              <tr><td colspan="4">&nbsp;</td><td class="text-start">Hidden Stems</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-
   </div>
 {% endblock content %}
 
 {% block extra_js %}
   <script src="{{ url_for('static', filename='assets/js/plugins/chartjs.min.js') }}"></script>
   <script>
+    // time-picker dropdown logic
     document.querySelectorAll('.time-option').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const value = btn.dataset.value;
-        const timeInput = document.getElementById('timeInput');
-        const timeContainer = document.getElementById('timeContainer');
-        const timeDropdown = document.getElementById('timeDropdown');
-        
-        if (value === 'unknown') {
-          timeInput.value = 'Unknown Hour';
-          timeContainer.classList.add('grayed-out');
-          // Keep dropdown functional - don't disable it
+      btn.addEventListener('click', () => {
+        const v  = btn.dataset.value;
+        const ti = document.getElementById('timeInput');
+        const tc = document.getElementById('timeContainer');
+        if (v === 'unknown') {
+          ti.value = 'Unknown Hour';
+          tc.classList.add('grayed-out');
         } else {
-          timeInput.value = value;
-          timeContainer.classList.remove('grayed-out');
+          ti.value = v;
+          tc.classList.remove('grayed-out');
         }
       });
     });
-    
-    // Calculate button click handler
-    document.getElementById('calculateBtn').addEventListener('click', function() {
-      // Add your calculation logic here
-      console.log('Calculate button clicked');
-      alert('Calculate functionality will be implemented here');
+
+    // Calculate button handler
+    document.getElementById('calculateBtn').addEventListener('click', async () => {
+      const dateInput     = document.getElementById('dateInput');
+      const timeInput     = document.getElementById('timeInput');
+      const timeContainer = document.getElementById('timeContainer');
+      const moonPhaseEl   = document.getElementById('moonAge');
+      const seasonEl      = document.getElementById('season');
+
+      // 1) Validate date
+      if (!dateInput.value) {
+        alert('❌ Please select a date.');
+        return;
+      }
+
+      // 2) Default to Unknown Hour
+      if (!timeInput.value.trim()) {
+        timeInput.value = 'Unknown Hour';
+        timeContainer.classList.add('grayed-out');
+      }
+
+      // 3) Show “loading”
+      moonPhaseEl.textContent = '⏳ Calculating…';
+      seasonEl.textContent   = '';
+
+      // 4) Build moon-phase query
+      let qs = `?date=${encodeURIComponent(dateInput.value)}`;
+      if (timeInput.value !== 'Unknown Hour') {
+        qs += `&time=${encodeURIComponent(timeInput.value)}`;
+      }
+
+      try {
+        const res  = await fetch(`/api/moon_phase${qs}`);
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        moonPhaseEl.textContent = data.phase_name;
+      } catch (err) {
+        console.error('Moon-phase error:', err);
+        alert(`⚠️ Error calculating moon phase:\n${err.message}`);
+        moonPhaseEl.textContent = '';
+      }
+
+      // 5) Chinese date query
+      try {
+        const chRes  = await fetch(`/api/chinese_date?date=${encodeURIComponent(dateInput.value)}`);
+        if (!chRes.ok) throw new Error((await chRes.json()).error || chRes.statusText);
+        const chData = await chRes.json();
+
+        document.getElementById('cycleValue').textContent = chData.cycle;
+        document.getElementById('yearValue').textContent  = `${chData.year} - ${chData.name}`;
+        document.getElementById('monthValue').textContent = chData.month + (chData.is_leap_month ? ' (leap)' : '');
+        document.getElementById('dayValue').textContent   = chData.day;
+      } catch (err) {
+        console.error('Chinese-date error:', err);
+        alert(`⚠️ Error calculating Chinese date:\n${err.message}`);
+      }
+
     });
   </script>
 {% endblock extra_js %}
