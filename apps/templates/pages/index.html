@@ -113,7 +113,7 @@
   <div class="container-fluid py-4">
     <div class="row">
       <!-- Date & Time Inputs -->
-      <div class="col-lg-2 col-md-4 col-sm-6 col-6 mt-4">
+      <div class="col-lg-3 col-md-4 col-sm-6 col-6 mt-4">
         <div class="card shadow">
           <div class="card-body p-3">
             <div class="mb-2">
@@ -163,14 +163,14 @@
       </div>
 
       <!-- Results: Moon Phase & Chinese Date -->
-      <div class="col-lg-3 col-md-6 col-sm-6 col-12 mt-4">
+      <div class="col-lg-4 col-md-6 col-sm-6 col-12 mt-4">
         <div class="card shadow">
           <div class="card-body p-3">
             <div class="row mb-3">
               <div class="col-6">
-                <label for="moonAge" class="form-label">Moon Phase</label>
+                <label for="moonPhase" class="form-label">Moon Phase</label>
                 <div class="form-control bg-light uniform-height"
-                     id="moonAge" readonly></div>
+                     id="moonPhase" readonly></div>
               </div>
               <div class="col-6">
                 <label for="season" class="form-label">Season</label>
@@ -252,7 +252,7 @@
       const dateInput     = document.getElementById('dateInput');
       const timeInput     = document.getElementById('timeInput');
       const timeContainer = document.getElementById('timeContainer');
-      const moonPhaseEl   = document.getElementById('moonAge');
+      const moonPhaseEl   = document.getElementById('moonPhase');
       const seasonEl      = document.getElementById('season');
 
       // 1) Validate date
@@ -269,7 +269,6 @@
 
       // 3) Show “loading”
       moonPhaseEl.textContent = '⏳ Calculating…';
-      seasonEl.textContent   = '';
 
       // 4) Build moon-phase query
       let qs = `?date=${encodeURIComponent(dateInput.value)}`;
@@ -294,10 +293,12 @@
         if (!chRes.ok) throw new Error((await chRes.json()).error || chRes.statusText);
         const chData = await chRes.json();
 
-        document.getElementById('cycleValue').textContent = chData.cycle;
-        document.getElementById('yearValue').textContent  = `${chData.year} - ${chData.name}`;
-        document.getElementById('monthValue').textContent = chData.month + (chData.is_leap_month ? ' (leap)' : '');
-        document.getElementById('dayValue').textContent   = chData.day;
+        seasonEl.textContent = chData.chinese_season;
+
+        document.getElementById('cycleValue').textContent  = chData.cycle;
+        document.getElementById('yearValue').textContent   = `${chData.year} - ${chData.name}`;
+        document.getElementById('monthValue').textContent  = chData.month + (chData.is_leap_month ? ' (leap)' : '');
+        document.getElementById('dayValue').textContent    = chData.day;
       } catch (err) {
         console.error('Chinese-date error:', err);
         alert(`⚠️ Error calculating Chinese date:\n${err.message}`);
