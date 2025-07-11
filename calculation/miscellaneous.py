@@ -52,3 +52,4 @@ if __name__ == "__main__":
 
     season, branch = get_chinese_season_by_month(dt.month)
     print(f"Date: {dt} → Chinese season: {season} ({branch})")
+

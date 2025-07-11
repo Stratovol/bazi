@@ -33,6 +33,8 @@ class Stems(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), nullable=False)
+    gm = db.Column(db.String(10), nullable=False)
+    polarity = db.Column(db.String(10), nullable=False)
 
     __table_args__ = {'info': {'is_read_only': True}}
 
@@ -76,6 +78,7 @@ class StemOrgan(db.Model):
     chinese_char = db.Column(db.String(10), nullable=False)
     pinyin = db.Column(db.String(10), nullable=False)
     organ = db.Column(db.String(10), nullable=False)
+    phase = db.Column(db.String(10), nullable=False)
 
     __table_args__ = {'info': {'is_read_only': True}}
 
@@ -91,6 +94,7 @@ class BranchOrgan(db.Model):
     chinese_char = db.Column(db.String(10), nullable=False)
     pinyin = db.Column(db.String(10), nullable=False)
     organ = db.Column(db.String(10), nullable=False)
+    phase = db.Column(db.String(10), nullable=False)
 
     __table_args__ = {'info': {'is_read_only': True}}
 
@@ -105,3 +109,11 @@ class CycleCalendar(db.Model):
     year        = db.Column(db.Integer, nullable=False)   # 1..60
     stem        = db.Column(db.String(10), nullable=False)
     branch      = db.Column(db.String(10), nullable=False)
+
+class HiddenStem(db.Model):
+    __bind_key__ = 'data_db'
+    __tablename__ = 'hidden_stems'
+
+    id            = db.Column(db.Integer, primary_key=True)
+    branch        = db.Column(db.String(10),  nullable=False, unique=True)
+    hidden_stems  = db.Column(db.JSON,         nullable=False)   # ← JSON column now

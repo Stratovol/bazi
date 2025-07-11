@@ -106,6 +106,12 @@
       height: 25px !important;
       vertical-align: middle !important;
     }
+
+    /* Equal widths for Birth Chart columns */
+    .table th,
+    #birthChartRow .table td {
+      width: 25% !important;
+    }
   </style>
 {% endblock extrastyle %}
 
@@ -205,26 +211,34 @@
       </div>
     </div>
 
-    <!-- Stats table (unchanged) -->
-    <div class="row mt-4">
-      <div class="col-12">
-        <div class="table-responsive">
-          <table class="table table-fullgrid align-middle text-center mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>Hour</th><th>Day</th><th>Month</th><th>Year</th><th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="gm-row"><td colspan="4">&nbsp;</td><td class="text-start">GM</td></tr>
-              <tr style="height:90px;"><td colspan="4">&nbsp;</td><td class="text-start">Stem</td></tr>
-              <tr style="height:90px;"><td colspan="4">&nbsp;</td><td class="text-start">Branch</td></tr>
-              <tr><td colspan="4">&nbsp;</td><td class="text-start">Hidden Stems</td></tr>
-            </tbody>
-          </table>
+    <!-- Birth Chart table, hidden by default -->
+    <div class="row mt-4" id="birthChartRow" style="display: none;">
+      <div class="col-7">
+        <div class="card mb-4">
+          <div class="card-header pb-0">
+            <h6>Birth Chart</h6>
+          </div>
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th id="bhYear" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th>
+                    <th id="bhMonth" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
+                    <th id="bhDay" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
+                    <th id="bhHour" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
+                  </tr>
+                </thead>
+                <tbody id="birthChartTbody">
+                  <!-- JS will insert 1 data row + 4 blank rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 {% endblock content %}
 
@@ -269,6 +283,7 @@
 
       // 3) Show “loading”
       moonPhaseEl.textContent = '⏳ Calculating…';
+      seasonEl.textContent    = '';
 
       // 4) Build moon-phase query
       let qs = `?date=${encodeURIComponent(dateInput.value)}`;
@@ -287,23 +302,45 @@
         moonPhaseEl.textContent = '';
       }
 
-      // 5) Chinese date query
+      // 5) Chinese date query + show birth chart
       try {
         const chRes  = await fetch(`/api/chinese_date?date=${encodeURIComponent(dateInput.value)}`);
         if (!chRes.ok) throw new Error((await chRes.json()).error || chRes.statusText);
         const chData = await chRes.json();
 
+        // populate existing fields
         seasonEl.textContent = chData.chinese_season;
-
         document.getElementById('cycleValue').textContent  = chData.cycle;
         document.getElementById('yearValue').textContent   = `${chData.year} - ${chData.name}`;
         document.getElementById('monthValue').textContent  = chData.month + (chData.is_leap_month ? ' (leap)' : '');
         document.getElementById('dayValue').textContent    = chData.day;
+
+        // prepare birth chart
+        const rowContainer = document.getElementById('birthChartRow');
+        const tbody        = document.getElementById('birthChartTbody');
+        tbody.innerHTML = '';
+
+        // dynamic headers
+        const [Y, M, D] = dateInput.value.split('-');
+        const H = (timeInput.value && timeInput.value !== 'Unknown Hour') ? timeInput.value : 'Unknown Hour';
+        document.getElementById('bhYear').textContent  = H;
+        document.getElementById('bhMonth').textContent = D;
+        document.getElementById('bhDay').textContent   = M;
+        document.getElementById('bhHour').textContent  = Y;
+
+        // first empty data row
+        tbody.insertAdjacentHTML('beforeend', `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`);
+        // next 3 more empty rows
+        for (let i = 0; i < 3; i++) {
+          tbody.insertAdjacentHTML('beforeend', `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`);
+        }
+
+        rowContainer.style.display = 'block';
+
       } catch (err) {
         console.error('Chinese-date error:', err);
         alert(`⚠️ Error calculating Chinese date:\n${err.message}`);
       }
-
     });
   </script>
 {% endblock extra_js %}

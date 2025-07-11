@@ -62,22 +62,6 @@ def api_chinese_date():
       "chinese_season": season   # ← new field
     })
 
-@blueprint.route('/billing')
-def billing():
-    return render_template('pages/billing.html', segment='billing')
-
-@blueprint.route('/rtl')
-def rtl():
-    return render_template('pages/rtl.html', segment='rtl')
-
-@blueprint.route('/tables')
-def tables():
-    return render_template('pages/tables.html', segment='tables')
-
-@blueprint.route('/virtual_reality')
-def virtual_reality():
-    return render_template('pages/virtual-reality.html', segment='virtual_reality')
-
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required

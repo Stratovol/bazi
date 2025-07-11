@@ -1,20 +1,20 @@
 from apps import create_app, db
-from apps.data.tables import ChineseCalendar, Stems, Branches, Divisions, StemOrgan, BranchOrgan, CycleCalendar
+from apps.data.tables import ChineseCalendar, Stems, Branches, Divisions, StemOrgan, BranchOrgan, CycleCalendar, \
+    HiddenStem
 from apps.config import config_dict
 
 def init_stems_data():
     stems_data = [
-        Stems(id=0, name='Kong'),
-        Stems(id=1, name='Jia'),
-        Stems(id=2, name='Yi'),
-        Stems(id=3, name='Bing'),
-        Stems(id=4, name='Ding'),
-        Stems(id=5, name='Wu'),
-        Stems(id=6, name='Ji'),
-        Stems(id=7, name='Geng'),
-        Stems(id=8, name='Xin'),
-        Stems(id=9, name='Ren'),
-        Stems(id=10, name='Gui')
+        Stems(id=1, name='Jia', gm='Earth', polarity='yang'),
+        Stems(id=2, name='Yi', gm='Metal', polarity='yin'),
+        Stems(id=3, name='Bing', gm='Water', polarity='yang'),
+        Stems(id=4, name='Ding', gm='Wood', polarity='yin'),
+        Stems(id=5, name='Wu', gm='Fire', polarity='yang'),
+        Stems(id=6, name='Ji', gm='Earth', polarity='yin'),
+        Stems(id=7, name='Geng', gm='Metal', polarity='yang'),
+        Stems(id=8, name='Xin', gm='Water', polarity='yin'),
+        Stems(id=9, name='Ren', gm='Wood', polarity='yang'),
+        Stems(id=10, name='Gui', gm='Fire', polarity='yin')
     ]
     db.session.bulk_save_objects(stems_data)
     db.session.commit()
@@ -22,7 +22,6 @@ def init_stems_data():
 
 def init_branches_data():
     branches_data = [
-        Branches(id=0, name='Kong'),
         Branches(id=1, name='Zi'),
         Branches(id=2, name='Chou'),
         Branches(id=3, name='Yin'),
@@ -57,16 +56,16 @@ def init_divisions_data():
 
 def init_stem_organs_data():
     stem_organs_data = [
-        StemOrgan(id=1, chinese_char='甲', pinyin='Jia', organ='GB'),
-        StemOrgan(id=2, chinese_char='乙', pinyin='Yi', organ='LIV'),
-        StemOrgan(id=3, chinese_char='丙', pinyin='Bing', organ='SI'),
-        StemOrgan(id=4, chinese_char='丁', pinyin='Ding', organ='HT'),
-        StemOrgan(id=5, chinese_char='戊', pinyin='Wu', organ='ST'),
-        StemOrgan(id=6, chinese_char='已', pinyin='Ji', organ='SP'),
-        StemOrgan(id=7, chinese_char='庚', pinyin='Geng', organ='CO'),
-        StemOrgan(id=8, chinese_char='辛', pinyin='Xin', organ='LU'),
-        StemOrgan(id=9, chinese_char='壬', pinyin='Ren', organ='BL'),
-        StemOrgan(id=10, chinese_char='癸', pinyin='Gui', organ='KI')
+        StemOrgan(id=1, chinese_char='甲', pinyin='Jia', organ='GB', phase='Wood'),
+        StemOrgan(id=2, chinese_char='乙', pinyin='Yi', organ='LIV', phase='Wood'),
+        StemOrgan(id=3, chinese_char='丙', pinyin='Bing', organ='SI', phase='Fire'),
+        StemOrgan(id=4, chinese_char='丁', pinyin='Ding', organ='HT', phase='Fire'),
+        StemOrgan(id=5, chinese_char='戊', pinyin='Wu', organ='ST', phase='Earth'),
+        StemOrgan(id=6, chinese_char='已', pinyin='Ji', organ='SP', phase='Earth'),
+        StemOrgan(id=7, chinese_char='庚', pinyin='Geng', organ='CO', phase='Metal'),
+        StemOrgan(id=8, chinese_char='辛', pinyin='Xin', organ='LU', phase='Metal'),
+        StemOrgan(id=9, chinese_char='壬', pinyin='Ren', organ='BL', phase='Water'),
+        StemOrgan(id=10, chinese_char='癸', pinyin='Gui', organ='KI', phase='Water')
     ]
     db.session.bulk_save_objects(stem_organs_data)
     db.session.commit()
@@ -74,18 +73,18 @@ def init_stem_organs_data():
 
 def init_branch_organs_data():
     branch_organs_data = [
-        BranchOrgan(id=1, chinese_char='子', pinyin='Zi', organ='GB'),
-        BranchOrgan(id=2, chinese_char='丑', pinyin='Chou', organ='LIV'),
-        BranchOrgan(id=3, chinese_char='寅', pinyin='Yin', organ='LU'),
-        BranchOrgan(id=4, chinese_char='卯', pinyin='Mao', organ='CO'),
-        BranchOrgan(id=5, chinese_char='辰', pinyin='Chen', organ='ST'),
-        BranchOrgan(id=6, chinese_char='巳', pinyin='Si', organ='SP'),
-        BranchOrgan(id=7, chinese_char='午', pinyin='Wu', organ='HT'),
-        BranchOrgan(id=8, chinese_char='未', pinyin='Wei', organ='SI'),
-        BranchOrgan(id=9, chinese_char='申', pinyin='Shen', organ='BL'),
-        BranchOrgan(id=10, chinese_char='酉', pinyin='You', organ='KI'),
-        BranchOrgan(id=11, chinese_char='戌', pinyin='Xu', organ='PC'),
-        BranchOrgan(id=12, chinese_char='亥', pinyin='Hai', organ='TH')
+        BranchOrgan(id=1, chinese_char='子', pinyin='Zi', organ='GB', phase='Water'),
+        BranchOrgan(id=2, chinese_char='丑', pinyin='Chou', organ='LIV', phase='Earth'),
+        BranchOrgan(id=3, chinese_char='寅', pinyin='Yin', organ='LU', phase='Wood'),
+        BranchOrgan(id=4, chinese_char='卯', pinyin='Mao', organ='CO', phase='Wood'),
+        BranchOrgan(id=5, chinese_char='辰', pinyin='Chen', organ='ST', phase='Earth'),
+        BranchOrgan(id=6, chinese_char='巳', pinyin='Si', organ='SP', phase='Fire'),
+        BranchOrgan(id=7, chinese_char='午', pinyin='Wu', organ='HT', phase='Fire'),
+        BranchOrgan(id=8, chinese_char='未', pinyin='Wei', organ='SI', phase='Earth'),
+        BranchOrgan(id=9, chinese_char='申', pinyin='Shen', organ='BL', phase='Metal'),
+        BranchOrgan(id=10, chinese_char='酉', pinyin='You', organ='KI', phase='Metal'),
+        BranchOrgan(id=11, chinese_char='戌', pinyin='Xu', organ='PC', phase='Earth'),
+        BranchOrgan(id=12, chinese_char='亥', pinyin='Hai', organ='TH', phase='Water')
     ]
     db.session.bulk_save_objects(branch_organs_data)
     db.session.commit()
@@ -156,14 +155,45 @@ def init_cycle_calendar_data():
         print("✅ cycle_calendar seeded with 60 entries.")
 
 
+def init_hidden_stems_data():
+
+    mapping = {
+        'Yin':  ['Jia', 'Bing', 'Wu'],
+        'Mao':  ['Yi'],
+        'Chen': ['Wu', 'Yi', 'Gui'],
+        'Si':   ['Bing', 'Geng', 'Wu'],
+        'Wu':   ['Ding', 'Ji'],
+        'Wei':  ['Ji', 'Ding', 'Yi'],
+        'Shen': ['Geng', 'Ren', 'Wu'],
+        'You':  ['Xin'],
+        'Xu':   ['Wu', 'Xin', 'Ding'],
+        'Hai':  ['Ren', 'Jia'],
+        'Zi':   ['Gui'],
+        'Chou': ['Ji', 'Gui', 'Xin'],
+    }
+
+    # wipe old
+    db.session.query(HiddenStem).delete()
+
+    # bulk‐insert new
+    objects = [
+        HiddenStem(branch=branch, hidden_stems=stems)
+        for branch, stems in mapping.items()
+    ]
+    db.session.bulk_save_objects(objects)
+    db.session.commit()
+    print("✅ Hidden‐stems data inserted successfully")
+
+
 if __name__ == '__main__':
     app = create_app(config_dict['development'])
     with app.app_context():
         db.create_all()
-        # init_calendar_data()
-        # init_stems_data()
-        # init_branches_data()
+        #init_calendar_data()
+        #init_stems_data()
+        #init_branches_data()
         #init_divisions_data()
         #init_stem_organs_data()
         #init_branch_organs_data()
-        init_cycle_calendar_data()
+        #init_cycle_calendar_data()
+        init_hidden_stems_data()
