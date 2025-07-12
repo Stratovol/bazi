@@ -133,21 +133,46 @@
     .stem-cell div {
       margin: 0;
     }
-/* Inner flex‐wrapper for hidden stems */
-.hs-flex {
-  display: flex !important;
-  justify-content: space-evenly;  /* even spacing across full width */
-  align-items: center;            /* vertically center */
-  width: 100%;                    /* fill the cell’s width */
-  padding: .375rem .75rem !important;
-}
+    #birthChartRow tbody tr:nth-child(4) td {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    /* Inner flex‐wrapper for hidden stems */
+    .hs-flex {
+      display: flex !important;
+      justify-content: space-evenly;  /* even spacing across full width */
+      align-items: center;            /* vertically center */
+      width: 100%;                    /* fill the cell’s width */
+      padding: 0 !important;
+    }
 
-.hs-item {
-  text-align: center;
-  line-height: 1.2;
-  /* no flex:1 here—each item will size to its own text */
-  margin: 0 .25rem;               /* a little gap on left/right */
-}
+    .hs-item {
+      display: inline-block;       /* shrink‐wrap the background */
+      padding: 0.25rem 0.4rem;     /* give it some breathing room */
+      border-radius: 0.2rem;      /* optional rounded edges */
+      text-align: center;
+      line-height: 1.5;
+      /* no flex:1 here—each item will size to its own text */
+      margin: 0.0rem;               /* a little gap on left/right */
+    }
+    /* ———————————————————————————————————————
+     Elemental background colors (20% opacity)
+     ——————————————————————————————————————— */
+    .bg-wood {
+      background-color: rgba(34, 139, 34, 0.3) !important;   /* ForestGreen @ 20% */
+    }
+    .bg-fire {
+      background-color: rgba(220, 20, 60, 0.3) !important;   /* Crimson  @ 20% */
+    }
+    .bg-earth {
+      background-color: rgba(218, 165, 32, 0.3) !important;  /* GoldenRod @ 20% */
+    }
+    .bg-metal {
+      background-color: rgba(211, 211, 211, 0.3) !important; /* LightGray @ 20% */
+    }
+    .bg-water {
+      background-color: rgba(30, 144, 255, 0.3) !important;  /* DodgerBlue@ 20% */
+    }
 
   </style>
 {% endblock extrastyle %}
@@ -353,14 +378,20 @@
         const bzRes  = await fetch(`/api/bazi${baziQs}`);
         const bzData = await bzRes.json();
         // YEAR
-        const gm     = bzData.year.GM;
-        const ystempinyin = bzData.year.Stem.pinyin;
-        const ystemChar  = bzData.year.Stem.chinese_char;
-        const ystemOrgan = bzData.year.Stem.organ;
-        const ybranchpinyin = bzData.year.Branch.pinyin;
-        const ybranchChar  = bzData.year.Branch.chinese_char;
-        const ybranchOrgan = bzData.year.Branch.organ;
-        const hiddenStems = bzData.year.HS;
+        const gm              = bzData.year.GM;
+        const ystemPinyin      = bzData.year.Stem.pinyin;
+        const ystemChar        = bzData.year.Stem.chinese_char;
+        const ystemOrgan       = bzData.year.Stem.organ;
+        const ystemPhase       = bzData.year.Stem.phase;        // e.g. "Wood"
+        const ybranchPinyin    = bzData.year.Branch.pinyin;
+        const ybranchChar      = bzData.year.Branch.chinese_char;
+        const ybranchOrgan     = bzData.year.Branch.organ;
+        const ybranchPhase     = bzData.year.Branch.phase;      // e.g. "Fire"
+        const yhiddenStems     = bzData.year.HS;                // array
+
+        const ygmClass        = 'bg-' + gm.toLowerCase();               // bg-earth, bg-water, etc.
+        const ystemClass      = 'bg-' + ystemPhase.toLowerCase();        // bg-wood, …
+        const ybranchClass    = 'bg-' + ybranchPhase.toLowerCase();      // bg-fire, …
 
         // populate existing fields
         seasonEl.textContent = chData.chinese_season;
@@ -388,7 +419,7 @@
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td>${gm}&nbsp;</td>
+        <td class="${ygmClass}">${gm}&nbsp;</td>
         </tr>`);
         // 2nd row: Stem
         tbody.insertAdjacentHTML('beforeend', `
@@ -396,8 +427,8 @@
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td class="stem-cell">
-          <div>${ystempinyin}</div>
+        <td class="stem-cell ${ystemClass}">
+          <div>${ystemPinyin}</div>
           <div>${ystemChar}</div>
           <div>${ystemOrgan}</div>
         </td>
@@ -408,8 +439,8 @@
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td class="stem-cell">
-          <div>${ybranchpinyin}</div>
+        <td class="stem-cell ${ybranchClass}">
+          <div>${ybranchPinyin}</div>
           <div>${ybranchChar}</div>
           <div>${ybranchOrgan}</div>
         </td>
@@ -417,12 +448,14 @@
         // 4th row: HS
 tbody.insertAdjacentHTML('beforeend', `
   <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
+    <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
     <td>
       <div class="hs-flex">
-        ${hiddenStems.map(hs => `<div class="hs-item">${hs.pinyin} ${hs.chinese_char}</div>`).join('')}
+        ${yhiddenStems.map(hs =>
+          `<div class="hs-item bg-${hs.phase.toLowerCase()}">
+             ${hs.pinyin} ${hs.chinese_char}
+           </div>`
+        ).join('')}
       </div>
     </td>
   </tr>
