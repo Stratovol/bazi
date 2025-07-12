@@ -4,7 +4,7 @@
 from datetime import datetime
 from apps import create_app, db
 from apps.config import config_dict
-from chinese_calendar import fixed_from_gregorian, chinese_from_fixed
+from calculation.chinese_calendar import fixed_from_gregorian, chinese_from_fixed
 from apps.data.tables import Stems, HiddenStem, StemOrgan, BranchOrgan
 
 

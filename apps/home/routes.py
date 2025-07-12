@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from calculation.miscellaneous import get_chinese_season_by_month
 from calculation.moon_phase import moon_phase
 from calculation.chinese_calendar import chinese_from_fixed, fixed_from_gregorian
+from calculation.bazi import calculate_bazi
 
 @blueprint.route('/')
 @blueprint.route('/index')
@@ -62,6 +63,26 @@ def api_chinese_date():
       "chinese_season": season   # ← new field
     })
 
+@blueprint.route('/api/bazi')
+def api_bazi():
+    date_str = request.args.get('date')
+    time_str = request.args.get('time', None)
+
+    if not date_str:
+        return jsonify({"error": "missing date"}), 400
+
+    # parse date
+    y, m, d = map(int, date_str.split('-'))
+
+    # parse time if provided
+    if time_str and time_str != 'Unknown Hour':
+        hour, minute = map(int, time_str.split(':'))
+    else:
+        hour, minute = None, 0
+
+    # delegate to your bazi calc
+    result = calculate_bazi(y, m, d, hour, minute)
+    return jsonify(result)
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required

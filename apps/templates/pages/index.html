@@ -109,9 +109,46 @@
 
     /* Equal widths for Birth Chart columns */
     .table th,
-    #birthChartRow .table td {
-      width: 25% !important;
+    #birthChartRow .table {
+      table-layout: fixed;
+      width: 100% !important;
     }
+
+    /* force each of the four columns to be exactly 25%, and center text */
+    #birthChartRow .table th,
+    #birthChartRow .table td {
+      text-transform: uppercase;       /* .text-uppercase */
+      font-size: 0.625rem !important;  /* .text-xxs */
+      font-weight: 700 !important;     /* .font-weight-bolder */
+      color: #6c757d !important;       /* .text-secondary */
+      opacity: 0.7 !important;         /* .opacity-7 */
+      width: 25% !important;      /* equal columns */
+      text-align: center !important;
+      vertical-align: middle !important;
+    }
+    .stem-cell {
+      padding: .375rem .75rem !important;  /* match uniform-height padding */
+      line-height: 1.2;
+    }
+    .stem-cell div {
+      margin: 0;
+    }
+/* Inner flex‐wrapper for hidden stems */
+.hs-flex {
+  display: flex !important;
+  justify-content: space-evenly;  /* even spacing across full width */
+  align-items: center;            /* vertically center */
+  width: 100%;                    /* fill the cell’s width */
+  padding: .375rem .75rem !important;
+}
+
+.hs-item {
+  text-align: center;
+  line-height: 1.2;
+  /* no flex:1 here—each item will size to its own text */
+  margin: 0 .25rem;               /* a little gap on left/right */
+}
+
   </style>
 {% endblock extrastyle %}
 
@@ -169,7 +206,7 @@
       </div>
 
       <!-- Results: Moon Phase & Chinese Date -->
-      <div class="col-lg-4 col-md-6 col-sm-6 col-12 mt-4">
+      <div class="col-lg-5 col-md-6 col-sm-6 col-12 mt-4">
         <div class="card shadow">
           <div class="card-body p-3">
             <div class="row mb-3">
@@ -213,7 +250,7 @@
 
     <!-- Birth Chart table, hidden by default -->
     <div class="row mt-4" id="birthChartRow" style="display: none;">
-      <div class="col-7">
+      <div class="col-8">
         <div class="card mb-4">
           <div class="card-header pb-0">
             <h6>Birth Chart</h6>
@@ -302,11 +339,28 @@
         moonPhaseEl.textContent = '';
       }
 
-      // 5) Chinese date query + show birth chart
+      // 5) Chinese date query
       try {
         const chRes  = await fetch(`/api/chinese_date?date=${encodeURIComponent(dateInput.value)}`);
         if (!chRes.ok) throw new Error((await chRes.json()).error || chRes.statusText);
         const chData = await chRes.json();
+
+        // 6) BaZi pillars
+        let baziQs = `?date=${encodeURIComponent(dateInput.value)}`;
+        if (timeInput.value !== 'Unknown Hour') {
+          baziQs += `&time=${encodeURIComponent(timeInput.value)}`;
+        }
+        const bzRes  = await fetch(`/api/bazi${baziQs}`);
+        const bzData = await bzRes.json();
+        // YEAR
+        const gm     = bzData.year.GM;
+        const ystempinyin = bzData.year.Stem.pinyin;
+        const ystemChar  = bzData.year.Stem.chinese_char;
+        const ystemOrgan = bzData.year.Stem.organ;
+        const ybranchpinyin = bzData.year.Branch.pinyin;
+        const ybranchChar  = bzData.year.Branch.chinese_char;
+        const ybranchOrgan = bzData.year.Branch.organ;
+        const hiddenStems = bzData.year.HS;
 
         // populate existing fields
         seasonEl.textContent = chData.chinese_season;
@@ -328,12 +382,52 @@
         document.getElementById('bhDay').textContent   = M;
         document.getElementById('bhHour').textContent  = Y;
 
-        // first empty data row
-        tbody.insertAdjacentHTML('beforeend', `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`);
-        // next 3 more empty rows
-        for (let i = 0; i < 3; i++) {
-          tbody.insertAdjacentHTML('beforeend', `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`);
-        }
+        // 1st row: GM
+        tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>${gm}&nbsp;</td>
+        </tr>`);
+        // 2nd row: Stem
+        tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td class="stem-cell">
+          <div>${ystempinyin}</div>
+          <div>${ystemChar}</div>
+          <div>${ystemOrgan}</div>
+        </td>
+        </tr>`);
+        // 3rd row: Stem
+        tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td class="stem-cell">
+          <div>${ybranchpinyin}</div>
+          <div>${ybranchChar}</div>
+          <div>${ybranchOrgan}</div>
+        </td>
+        </tr>`);
+        // 4th row: HS
+tbody.insertAdjacentHTML('beforeend', `
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>
+      <div class="hs-flex">
+        ${hiddenStems.map(hs => `<div class="hs-item">${hs.pinyin} ${hs.chinese_char}</div>`).join('')}
+      </div>
+    </td>
+  </tr>
+`);
+
 
         rowContainer.style.display = 'block';
 
